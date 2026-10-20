@@ -1,0 +1,445 @@
+/* ============================================================
+   EH WhatsApp Like — تصميم الشات
+   الزر العائم أسفل اليمين + اللوحة + دروب داون النافبار
+   ============================================================ */
+
+/* الزر العائم */
+.eh-widget {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.eh-fab {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: #25d366;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: transform .15s ease;
+}
+.eh-fab:hover { transform: scale(1.06); background: #1ebe5b; }
+.eh-fab .eh-badge {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  background: #dc3545;
+  color: #fff;
+  border-radius: 999px;
+  min-width: 20px;
+  height: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  border: 2px solid #fff;
+}
+
+/* اللوحة الجانبية */
+.eh-panel {
+  width: 340px;
+  max-width: calc(100vw - 40px);
+  max-height: 480px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, .25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #e5e5e5;
+}
+.eh-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #075e54;
+  color: #fff;
+}
+.eh-panel-title { font-weight: 700; flex: 1; }
+.eh-panel-all { color: #dcf8c6; font-size: 12px; text-decoration: none; }
+.eh-panel-all:hover { text-decoration: underline; }
+.eh-panel-close {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  opacity: .8;
+}
+.eh-panel-close:hover { opacity: 1; }
+.eh-panel-body { overflow-y: auto; flex: 1; background: #ece5dd; }
+
+/* عناصر المحادثة */
+.eh-thread {
+  display: flex;
+  gap: 10px;
+  padding: 10px 12px;
+  text-decoration: none;
+  color: inherit;
+  border-bottom: 1px solid #d9d9d9;
+}
+.eh-thread:hover { background: #f0f0f0; }
+.eh-thread-img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.eh-thread-body { flex: 1; min-width: 0; }
+.eh-thread-name { font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 5px; }
+.eh-thread-msg { font-size: 12.5px; color: #444; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* التاريخ والساعة — سطر لوحده تحت الرسالة (مش جنب البادج) */
+.eh-thread-time {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: #888;
+  margin-top: 4px;
+}
+/* بادج غير المقروء — دائرة صغيرة مدورة ع اليمين (مش بيتمطط مع ارتفاع الصف) */
+.eh-thread-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  align-self: flex-start;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  margin-top: 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+}
+.eh-quick {
+  flex-shrink: 0;
+  align-self: center;
+  border: none;
+  background: #075e54;
+  color: #fff;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 12px;
+}
+.eh-quick:hover { background: #128c7e; }
+.eh-empty { padding: 16px; text-align: center; color: #888; font-size: 13px; }
+
+/* نقطة الاتصال */
+.eh-dot { width: 8px; height: 8px; border-radius: 50%; background: #bbb; display: inline-block; flex-shrink: 0; }
+.eh-dot.on { background: #22c55e; }
+
+/* دروب داون النافبار — الشكل الأصيل (هيدر أخضر + عناصر واتساب) */
+.eh-nav-item { position: relative; } /* مهم: عشان الدروب يفتح تحت الأيقونة مش فوق الشاشة */
+
+/* عناصر دروب الثيم: صورة مدورة + اسم + وقت + رسالة
+   (AdminLTE 4 مبيديش img-circle ولا .media، فبنعرّفهم هنا) */
+#ehNavDrop .dropdown-item { padding-top: .5rem; padding-bottom: .5rem; }
+#ehNavDrop .media { display: flex; align-items: flex-start; gap: .75rem; }
+#ehNavDrop .media-body { flex: 1; min-width: 0; }
+#ehNavDrop .img-circle { border-radius: 50% !important; object-fit: cover; }
+#ehNavDrop .eh-quick { margin-inline-start: .25rem; }
+/* الدروب بيفتح ناحية الشمال (جوه الشاشة) مش اليمين (بره الشاشة) */
+#ehNavDrop {
+  left: auto !important;
+  right: 0 !important;
+}
+.eh-nav-btn {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 8px 12px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.eh-nav-btn:hover { opacity: .8; }
+/* العداد فوق الأيقونة (مش وراها) */
+#ehNavBadge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  font-size: 10px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* اللوحة والقائمة: اللون الافتراضي بيتحدد لكل وضع (وايت/دارك) تحت في قسم الدارك */
+.eh-nav-drop {
+  width: 340px;
+  max-width: calc(100vw - 30px);
+  padding: 0;
+  border-radius: 12px;
+  border: 1px solid #e5e5e5;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, .25);
+  direction: rtl;
+  text-align: right;
+}
+.eh-nav-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #075e54;
+  color: #fff;
+}
+.eh-nav-head span { font-weight: 700; flex: 1; }
+.eh-nav-head a { color: #dcf8c6; font-size: 12px; text-decoration: none; }
+.eh-nav-head a:hover { text-decoration: underline; }
+.eh-nav-body { max-height: 380px; overflow-y: auto; background: #fff; }
+.eh-quick {
+  flex-shrink: 0;
+  align-self: center;
+  border: none;
+  background: none;
+  color: #6c757d;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 50%;
+}
+.eh-quick:hover { color: #075e54; background: #f0f0f0; }
+
+/* فقاعات المحادثة — ألوان ثابتة عشان الدارك والوايت يشتغلوا (من elite-flame) */
+.eh-bubble { width: fit-content; max-width: 75%; padding: 9px 12px; border-radius: 14px; margin-bottom: 10px; clear: both; }
+.eh-bubble-me { background: #dcf8c6; color: #111; margin-left: auto; }
+.eh-bubble-other { background: #fff; color: #111; border: 1px solid #e5e5e5; margin-right: auto; box-shadow: 0 1px 1px rgba(0, 0, 0, .08); }
+.eh-bubble-text { word-break: break-word; }
+.eh-bubble-meta { display: flex; gap: 4px; align-items: center; justify-content: flex-end; margin-top: 4px; font-size: 11px; color: #667781; }
+.eh-tick { color: #6b7280; }
+.eh-tick.read { color: #2f9bf0; }
+.eh-denied { color: #dc3545; text-align: center; padding: 12px; }
+
+/* إشعار «قراية بس — مش مسموح يرد» */
+.eh-readonly {
+  background: #fff3cd;
+  color: #7a5b00;
+  border: 1px solid #ffe69c;
+  border-radius: 10px;
+  padding: .5rem .75rem;
+  margin: 0 0 10px;
+  text-align: center;
+  font-size: 12.5px;
+}
+
+/* ============================================================
+   Select2 — نسخة البلجن المستقلة
+   الفلتر بيتخفي في الدارك (بيظهر أبيض ع الداكن) فبنقلبه هنا
+   ============================================================ */
+.eh-select2 { width: 100% !important; }
+
+/* الحاوية (سنجل + مالتي): الخلفية والنص والإطار مضمونة بـ!important
+   عشان تغلب ترتيب أي ملفات لو select2 اتصل بعدنا */
+[data-bs-theme="dark"] .select2-container .select2-selection,
+[data-bs-theme=dark] .select2-container .select2-selection {
+  background: #2b3035 !important;
+  border: 1px solid #495057 !important;
+  color: #dee2e6 !important;
+  box-shadow: none !important;
+}
+[data-bs-theme="dark"] .select2-container--default.select2-container--focus .select2-selection,
+[data-bs-theme=dark] .select2-container--default.select2-container--focus .select2-selection {
+  border: 1px solid #0d6efd !important;
+}
+/* الاسم الظاهر + الـplaceholder */
+[data-bs-theme="dark"] .select2-selection .select2-selection__rendered,
+[data-bs-theme=dark] .select2-selection .select2-selection__rendered {
+  color: #dee2e6 !important;
+}
+[data-bs-theme="dark"] .select2-selection .select2-selection__placeholder,
+[data-bs-theme=dark] .select2-selection .select2-selection__placeholder {
+  color: #adb5bd !important;
+}
+/* رقاقات الاختيارات (multi) */
+[data-bs-theme="dark"] .select2-selection .select2-selection__choice,
+[data-bs-theme=dark] .select2-selection .select2-selection__choice {
+  background: #3a4046 !important;
+  border: 1px solid #495057 !important;
+  color: #e9ecef !important;
+}
+[data-bs-theme="dark"] .select2-selection .select2-selection__choice__remove,
+[data-bs-theme=dark] .select2-selection .select2-selection__choice__remove {
+  color: #e9ecef !important;
+}
+[data-bs-theme="dark"] .select2-selection .select2-selection__choice__remove:hover,
+[data-bs-theme=dark] .select2-selection .select2-selection__choice__remove:hover {
+  color: #fff !important;
+}
+/* حقل البحث — جوه الحاوية وفي قايمة الاقتراحات */
+[data-bs-theme="dark"] .select2-search--inline .select2-search__field,
+[data-bs-theme=dark] .select2-search--inline .select2-search__field {
+  background: transparent !important;
+  color: #e9ecef !important;
+  border: none !important;
+  outline: none !important;
+}
+[data-bs-theme="dark"] .select2-dropdown .select2-search__field,
+[data-bs-theme=dark] .select2-dropdown .select2-search__field {
+  background: #212529 !important;
+  color: #e9ecef !important;
+  border: 1px solid #495057 !important;
+}
+[data-bs-theme="dark"] .select2-dropdown .select2-search__field:focus,
+[data-bs-theme=dark] .select2-dropdown .select2-search__field:focus {
+  border-color: #0d6efd !important;
+}
+/* القايمة + العناصر */
+[data-bs-theme="dark"] .select2-dropdown,
+[data-bs-theme=dark] .select2-dropdown {
+  background: #2b3035 !important;
+  border: 1px solid #495057 !important;
+  color: #dee2e6 !important;
+}
+[data-bs-theme="dark"] .select2-results__option,
+[data-bs-theme=dark] .select2-results__option {
+  color: #dee2e6 !important;
+  background: transparent;
+}
+[data-bs-theme="dark"] .select2-results__option[aria-selected="true"],
+[data-bs-theme=dark] .select2-results__option[aria-selected="true"] {
+  background: #3a4046 !important;
+  color: #e9ecef !important;
+}
+[data-bs-theme="dark"] .select2-container--default .select2-results__option--highlighted[aria-selected],
+[data-bs-theme=dark] .select2-container--default .select2-results__option--highlighted[aria-selected] {
+  background: #0d6efd !important;
+  color: #fff !important;
+}
+/* السهم بتاع السنجل */
+[data-bs-theme="dark"] .select2-container--default .select2-selection--single .select2-selection__arrow b,
+[data-bs-theme=dark] .select2-container--default .select2-selection--single .select2-selection__arrow b {
+  border-color: #adb5bd transparent transparent transparent !important;
+}
+
+/* شكل الرد السريع */
+.eh-qr-ctx { background: #f0f2f5; border-radius: 10px; padding: 10px 12px; margin-bottom: 14px; direction: rtl; }
+.eh-qr-ctx-label { font-size: 11px; color: #667; margin-bottom: 4px; }
+.eh-qr-ctx-msg {
+  background: #fff; color: #111; border: 1px solid #e5e5e5; border-radius: 10px;
+  padding: 8px 10px; font-size: 13px; max-height: 110px; overflow-y: auto;
+  word-break: break-word;
+}
+
+/* قائمة الجهات على الشمال في صفحة المحادثة */
+.eh-contacts { max-height: 70vh; overflow-y: auto; }
+.eh-contact {
+  display: flex; gap: 10px; align-items: center; padding: 9px 12px;
+  border-bottom: 1px solid #eee; cursor: pointer; text-decoration: none; color: inherit;
+}
+.eh-contact:hover { background: #f5f5f5; }
+.eh-contact.active { background: #e9ecef; }
+.eh-contact-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.eh-contact-name { font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+.eh-contact-msg { font-size: 12px; color: #667; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* صفحة المحادثة */
+.eh-chat-page { direction: rtl; }
+.eh-messages { height: 62vh; overflow-y: auto; background: #ece5dd; border-radius: .5rem; padding: 1rem; }
+
+/* دروب الثيم (بيانات eh_chat) — في الشاشات الصغيرة يفتح جوه الشاشة
+   (لأن عنصر النافبار نفسه بيبقى صغير الشمال في الموبايل) */
+@media (max-width: 991.98px) {
+  #ehNavDrop {
+    position: fixed !important;
+    top: 56px !important;
+    left: 8px !important;
+    right: 8px !important;
+    width: auto !important;
+    max-width: none !important;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .eh-widget { bottom: 12px; right: 12px; }
+  .eh-panel { width: calc(100vw - 24px); }
+}
+
+/* ============================================================
+   الدارك مود — الثيم بيحط data-bs-theme="dark" على <html>
+   وبنقلب هنا كل سطوح البلجن (دروب النافبار + الزر العائم + صفحات الشات)
+   عشان النص يبان. الألوان مأخوذة من لوحة Bootstrap الدارك بتاعة الثيم.
+   ============================================================ */
+[data-bs-theme="dark"] {
+  /* دروب داون النافبار */
+  #ehNavDrop {
+    background: #2b3035;
+    border-color: #495057;
+    color: #dee2e6;
+  }
+  #ehNavDrop .dropdown-item { color: #dee2e6; }
+  #ehNavDrop .dropdown-item:hover,
+  #ehNavDrop .dropdown-item:focus {
+    background: #3a4046;
+    color: #fff;
+  }
+  #ehNavDrop .dropdown-header,
+  #ehNavDrop .dropdown-footer { color: #dee2e6; }
+  #ehNavDrop .text-muted { color: #adb5bd !important; }
+  #ehNavDrop .dropdown-divider { border-color: #495057; }
+  /* الفاصل الافتراضي بيستخدم --bs-border-color، وده متظبط أصلاً */
+
+  /* الزر العائم + اللوحة */
+  .eh-panel {
+    background: #2b3035;
+    border-color: #495057;
+    color: #dee2e6;
+  }
+  .eh-panel-body { background: #212529; }
+  .eh-thread { border-bottom-color: #3a4046; color: #dee2e6; }
+  .eh-thread:hover { background: #3a4046; }
+  .eh-thread-name { color: #e9ecef; }
+  .eh-thread-time { color: #adb5bd; }
+  .eh-thread-msg { color: #ced4da; }
+  .eh-empty { color: #adb5bd; }
+  .eh-quick { color: #adb5bd; }
+  .eh-quick:hover { color: #fff; background: #495057; }
+
+  /* لوحة الرد السريع (SweetAlert2) */
+  .eh-qr-ctx { background: #343a40; }
+  .eh-qr-ctx-label { color: #adb5bd; }
+  .eh-qr-ctx-msg { background: #212529; color: #dee2e6; border-color: #495057; }
+
+  /* قائمة الجهات في صفحة المحادثة */
+  .eh-contact { border-bottom-color: #3a4046; color: #dee2e6; }
+  .eh-contact:hover { background: #343a40; }
+  .eh-contact.active { background: #3a4046; }
+  .eh-contact-name { color: #e9ecef; }
+  .eh-contact-msg { color: #adb5bd; }
+
+  /* صفحة المحادثة + الرسائل (خلفية الفقاعات) */
+  .eh-messages { background: #1c1f23; }
+
+  /* الفقاعات: المرسلة (خضرا فاتحة فبتفضل بغامق) والواردة (بتبقى غامقة) */
+  .eh-bubble-me { background: #005c4b; color: #e9edef; }
+  .eh-bubble-other { background: #2b3035; color: #e9edef; border-color: #3a4046; }
+  .eh-bubble-meta { color: #a8b0b8; }
+  .eh-tick { color: #a0a8b0; }
+  .eh-tick.read { color: #53bdeb; }
+
+  /* إشعار «قراية بس» */
+  .eh-readonly { background: #4a3f14; color: #ffe08a; border-color: #6b5d1f; }
+}
+

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+  <name>EH WhatsApp Like</name>
+  <author>Emad Helmy</author>
+  <website>https://userspice.com</website>
+  <version>1.0.0</version>
+  <release>October 18, 2026</release>
+  <tested>6.1.7</tested>
+  <description>
+    A WhatsApp-like internal chat system for any UserSpice site:
+    one-to-one conversations, broadcast messages by permission or to a specific user,
+    unread counter, online/offline indicator (watchdog / last_watchdog),
+    a floating button at the bottom right plus a dropdown in the top navbar,
+    and chat/messages pages stored in independent tables with the eh_ prefix.
+  </description>
+  <button>EH Chat</button>
+</plugin>

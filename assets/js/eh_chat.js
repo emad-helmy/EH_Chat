@@ -63,11 +63,12 @@
         /* عداد الزر العائم */
         var badge = document.getElementById('ehBadge');
         var n = parseInt(res.unread_count || 0, 10);
-        if (badge) { badge.hidden = n <= 0; badge.textContent = n > 99 ? '99+' : n; }
+        if (badge) { badge.classList.toggle('d-none', n <= 0); badge.textContent = n > 99 ? '99+' : n; }
 
-        /* عداد النافبار + نص الهيدر */
+        /* عداد النافبار + نص الهيدر — d-none (مش hidden) عشان قواعد display
+           بتاعة BS/الثيم بتغلب hidden العادي */
         var nbadge = document.getElementById('ehNavBadge');
-        if (nbadge) { nbadge.hidden = n <= 0; nbadge.textContent = n > 99 ? '99+' : n; }
+        if (nbadge) { nbadge.classList.toggle('d-none', n <= 0); nbadge.textContent = n > 99 ? '99+' : n; }
         var nhead = document.getElementById('ehNavHead');
         if (nhead) { nhead.textContent = n + ' ' + T('EH_CHAT_UNREAD'); }
 

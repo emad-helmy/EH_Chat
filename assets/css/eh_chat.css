@@ -37,6 +37,26 @@
 #ehNavBadge[hidden], #ehNavBadge.d-none {
   display: none !important;
 }
+/* شكل بادج النافبار — دائرة صغيرة فيها الرقم، مقفولة بـid + !important
+   عشان أي CSS إضافي بيتحمّل بعد الثيم (زي bootstrap كذا) ميفسدهاش */
+#ehNavBadge {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px !important;
+  border-radius: 999px !important;
+  background: #dc3545 !important;
+  color: #fff !important;
+  font-size: 10.5px !important;
+  font-weight: 700 !important;
+  line-height: 1;
+}
+/* d-none لازم يغلب أولوية الـid — فبنعقد القاعدة بنفس الـid + كلاس */
+#ehNavBadge.d-none, #ehNavBadge[hidden] {
+  display: none !important;
+}
 .eh-fab .eh-badge {
   position: absolute;
   top: -4px;

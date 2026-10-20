@@ -71,6 +71,25 @@
         var nhead = document.getElementById('ehNavHead');
         if (nhead) { nhead.textContent = n + ' ' + T('EH_CHAT_UNREAD'); }
 
+        /* بديل عام — يشتغل مع أي ثيم: بادج صغير على بند المحادثات في المينيو
+           (مشتلزمش أي ids من الثيم — بنلاقي لينك eh_messages.php في المينيو نفسه) */
+        var navA = null;
+        document.querySelectorAll('a[href*="eh_messages.php"]').forEach(function (a) {
+            if (!navA && !a.closest('#ehWidget')) navA = a;
+        });
+        var mb = document.getElementById('ehNavDropBadge');
+        if (navA && n > 0) {
+            if (!mb) {
+                mb = document.createElement('span');
+                mb.id = 'ehNavDropBadge';
+                mb.className = 'eh-nav-badge';
+                navA.appendChild(mb);
+            }
+            mb.textContent = n > 99 ? '99+' : n;
+        } else if (mb) {
+            mb.remove();
+        }
+
         /* المحتوى — عناصر واتساب في الاتنين (النافبار + الزر العائم) */
         var nbody = document.getElementById('ehNavBody');
         if (nbody && res.panelHtml) nbody.innerHTML = res.panelHtml;

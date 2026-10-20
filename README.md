@@ -1,121 +1,19 @@
 # EH WhatsApp Like — UserSpice Chat Plugin
 
-<div dir="rtl">
-
-## العربي
-
-بلجن محادثات داخلي شبيه بواجهة واتساب لأي موقع يعمل بنظام **UserSpice 6.1.7**.
-مستقل تمامًا عن أي كود تاني في الموقع (ولا يعتمد على بلجن خارجي ولا الـCRM)، وبيتثبت من غير أي تعديل على ملفات النظام.
-
-| | |
-| --- | --- |
-| **المؤلف** | Emad Helmy |
-| **الإصدار** | 1.0.0 — مختبر مع UserSpice 6.1.7 |
-| **الترخيص** | MIT |
-
-### المميزات
-- **محادثة واحد-لواحد** بفقاعات رسايل زي واتساب بالظبط.
-- **إرسال جماعي (Broadcast):** لبرمشنات معينة، أو لكل الموقع (`@all` — للأدمن بس)، أو لمستخدمين محددين.
-- **مصفوفة صلاحيات (Permission Matrix):** الأدمن بيحدد مين يقدر يكلم مين (برمشن × برمشن) من صفحة إعدادات البلجن.
-- **القراية مش الرد:** لو الأدمن بعت لمستخدم مش مسموح له يرد عليه — المستخدم **يقدر يفتح ويقرا** الرسالة، ومربع الرد بيختفي مع إشعار واضح، وأي محاولة رد مخبولة بترفض من السيرفر نفسه.
-- **عداد رسائل غير مقروءة** على زر عائم أسفل اليمين + دروب داون في الشريط العلوي بستايل AdminLTE 4.
-- **مؤشر متصل/غير متصل** عبر عمود `last_watchdog` (ولو بلجن watchdog شغال بيتكامل معاه).
-- **قراية الرسالة:** علامة ✓ رمادية (اترسلت) و✓✓ زرق (اتقرت) زي واتساب.
-- **دعم كامل للدارك مود** (`data-bs-theme="dark"`) في كل أجزاء البلجن.
-- **دعم اللغتين:** كل واجهة البلجن بتتبع لغة الموقع (عربي / إنجليزي) بملفات لغة مستقلة + احتياطي مدمج.
-- **SweetAlert2** مرفقة مع البلجن نفسه (من غير أي تثبيت إضافي) — ومفيش استخدم لدير أو alert مش نافة من الإانتربيوي.
-- **Select2** مرفقة كمان (بحث + اختيار متعدد) في كل دروب داونس — بتقدر تبعت رسالة واحدة لكذا مستخدم في نفس الوقت، والمستخدمين الكزامة بيتفلتر بسرعة (بحث بالاسم أو اليوزرنيم).
-
-### التثبيت
-1. ارفع فولدر `eh_chat` كامل تحت:
-   ```
-   usersc/plugins/
-   ```
-2. من لوحة تحكم الأدمن: **Plugins → Informations → Install** — دولًا أول ما البلوغين يتركب، هيُنشئ تلقائيًا:
-   - جداول الداتابيز الخاصة بالبلجن
-   - صفحات `usersc/eh_chat.php` + `usersc/eh_messages.php`
-   - مفاتيح اللغة في `usersc/lang` (عربي + إنجليزي)
-   - تسجيل البلجن في نظام بلجنات UserSpice
-3. فعّل البلجن (Activate).
-4. من زر **EH Chat (Configure)** اضبط مصفوفة الصلاحيات وإعدادات الـBroadcast.
-5. **مفيش SQL جديد** — الجداول بتتعمل أوتوماتيك من الـInstall، وتقدر تعيد التثبيت بأمان (Idempotent).
-
-### الصفحات اللي البلجن بيعملها
-| الصفحة | وظيفتها |
-| --- | --- |
-| `usersc/eh_chat.php` | شات عمودين: قايمة جهات (شمال) + مربع المحادثة (يمين)، مع تحديث (polling) كل ٣ ثواني |
-| `usersc/eh_messages.php` | آخر المحادثات + شاشة إرسال (خاص / صفحة بروادكاست / @all) |
-
-### هيكل الداتابيز (بيتعمل أتوماتيك من Install)
-| الجدول | وظيفته |
-| --- | --- |
-| `eh_chat_messages` | الرسائل: مرسل / مستلم / النص / حالة القراءة / نوع (خاص أو جماعي) / التوقيت |
-| `eh_chat_settings` | إعدادات البلجن (سطر واحد): مصفوفة الصلاحيات + برمشنات ومستخدمين الـBroadcast + حد مؤشر الاتصال (دقائق) |
-| `users.last_watchdog` | توقيت آخر نشاط لكل مستخدم (بيستخدمه المؤشر متصل/غير متصل) — عمود يُضاف على جدولUsers |
-
-### نظام الصلاحيات
-- **مصفوفة البرمشنات:** الصفوف = المرسل، الأعمدة = المستقبل. الأدمن (برمشن 2) يقدر يكلم أي حد دايمًا.
-- **الإرسال الجماعي:** بيمر من فحص صلاحية الـBroadcast — إما برمشن معتمدة أو مستخدمين محددين في الإعدادات.
-- **فتح المحادثة (القراية) مش الرد:** أقدر أقرا لو أنا مسموح أكلمه *أو* هو مسموح يكلمني *أو* في فواتير (رسايل قديمة) بيننا؛ لكن الرد بيتحدد بس من مصفوفة المرسل أنا.
-- **حارس مركزي:** كل إدراج رسالة بيعدي من `eh_chat_send()` اللي بترفض المستلم غير المسموح — يعني حتى لو مسار قديم سب الفحص، بالكتابة المضمونة مافيش حالة خدش صلاحية.
-- **CSRF Token** مطلوب في كل عملية إرسال، والصفحات بتستخدم `securePage()` العادية زي أي صفحة UserSpice.
-- لو سطر إعدادات إعدادات البلجن مفقود من أي سبب، صفحة الإعدادات بتُنشئه قبل الحفظ الأول (بدل فشل صامت).
-
-### الـAJAX API
-كل الردود JSON موحد نفس الشكل: `{"status": "success|error", "message": ...}`
-
-| الملف | الوظيفة |
-| --- | --- |
-| `ajax/nav.php` | عداد غير المقروء + آخر محادثات (دروب داون النافبار + الزر العائم) |
-| `ajax/contacts.php` | قايمة المحادثات لصفحة اShate |
-| `ajax/send.php` | إرسال (خاص / لبرمشن / @all / بروادكاست) بفحص صلاحيات كامل |
-| `ajax/messages.php` | رسائل محادثة واحدة + تعليمها كمقروءة (بيرجّع `can_send` عشان الواجهة تعرف تخفي مربع الرد ولا لأ) |
-
-### ملفات اللغة
-- البلجن بيكتشف لغة الموقع من `$_SESSION['us_lang']` ويحمّل مقاديره المشففة، وبيكتبها كمان في `usersc/lang/<code>.php` وقت التثبيت.
-- أي مفتاح مش موجود بيرجع لترجمة احتياطية مدمجة `eh_chat_lang_fallback()` (تواريخ / أيام الأسبوع / إشعارات).
-
-### شجرة الملفات
-```
-usersc/plugins/eh_chat/
-├── activate.php / install.php / uninstall.php / update.php / migrate.php
-├── configure.php          ← صفحة إعدادات الأدمن (المصفوفة + Broadcast + حد الاتصال)
-├── functions.php          ← المنطق كله (الصلاحيات / التوقيت / الإرسال / الأفاتار)
-├── footer.php             ← التضمين الرسمي: الزر العائم + الأصول + مؤشر الاتصال
-├── logo.png  plugin_info.php  info.xml
-├── ajax/                  (nav, contacts, send, messages)
-├── assets/                (css, js, SweetAlert2 + Select2, صفحات مصدرية عند التثبيت)
-├── lang/                  (ar-EG.php, en-US.php)
-├── sql/001_eh_chat_schema.sql
-└── assets/pages/           ← الصفحات اللي بتتنقل لـusersc (eh_chat.php, eh_messages.php) — كاملة بغير view
-```
-
-### ملاحظة Git
-ملفات اللغة المكتوبة على السيرفر بتظهر مرة ثانية من التثبيت، فمتضفَّتش للـGit:
-```
-# بتتعمل أوتوماتيك من الـInstall — مش ملفات مصدر
-usersc/lang/en-US.php
-usersc/lang/ar-EG.php
-```
-
----
-
-</div>
-
 ## English
 
-A WhatsApp-style internal chat plugin for any site running **UserSpice 6.1.7**.
-It is fully independent from the rest of the site (no external plugin or CRM dependency) and installs without touching any core file.
+A WhatsApp-style internal chat plugin for any site running **UserSpice 6.1.6 and newer**.
+It is fully independent from the rest of the site (no external plugin) and installs without touching any core file.
 
 | | |
 | --- | --- |
 | **Author** | Emad Helmy |
-| **Version** | 1.0.0 — tested with UserSpice 6.1.7 |
+| **Version** | 1.0.0 — tested with UserSpice 6.1.6 / 6.1.7 |
 | **License** | MIT |
 
 ### Features
 - **One-to-one chat** with WhatsApp-style message bubbles.
-- **Broadcast messaging:** to specific permissions, to the whole site (`@all` — admin only), or to selected users.
+- **Broadcast messaging:** to specific permissions, to the whole site (`@all` — admin only), or to selected users or permission.
 - **Permission matrix:** the admin defines exactly who can message whom (permission × permission) from the plugin's configure page.
 - **Read ≠ Reply:** if the admin messages a user who is not allowed to message back, that user **can still open and read** the conversation — the reply box is hidden with a clear notice, and any forged reply attempt is rejected on the server.
 - **Unread counter** on a floating button (bottom-right) plus a dropdown in the top navbar in AdminLTE 4 style.
@@ -125,13 +23,14 @@ It is fully independent from the rest of the site (no external plugin or CRM dep
 - **Bilingual:** the whole UI follows the site language (Arabic / English) with dedicated language files and a built-in fallback.
 - **SweetAlert2** is bundled inside the plugin (zero extra install); no native browser `alert()` dialogs are used.
 - **Select2** is bundled too (searchable + multi-select) across every dropdown — send one message to several users at once, and big user lists are easily filtered by name or username.
+- **Menu item for other themes:** add a "Messages" item as the last entry of any menu straight from the Configure page — rendered in the theme's own style with a live unread-count bubble. **UltraMenu required.**
 
 ### Installation
 1. Upload the whole `eh_chat` folder into:
    ```
    usersc/plugins/
    ```
-2. From the admin panel: **Plugins → Informations → Install** — the installer automatically:
+2. From the UserSpice admin Dashboard: **Plugin Manager → Install** — the installer automatically:
    - creates the plugin's database tables,
    - registers `usersc/eh_chat.php` + `usersc/eh_messages.php` as pages,
    - writes the language keys into `usersc/lang` (Arabic + English),
@@ -161,6 +60,15 @@ It is fully independent from the rest of the site (no external plugin or CRM dep
 - **CSRF tokens** are required for every send operation; pages use the standard `securePage()` like any UserSpice page.
 - If the settings row is missing for any reason, the configure page creates it before the first save (no silent failures).
 
+### Menu integration (UltraMenu)
+For themes without a chat dropdown in the navbar, the plugin's **Configure** page has a dedicated card that adds a **"Messages" item as the LAST top-level entry of any menu**:
+
+- Choose the menu, optionally set the icon class (e.g. `fas fa-comments`) — the item is stored in `us_menu_items`, so it is rendered **by the theme's own style**, exactly like any other menu item.
+- Afterwards you can drag, re-position, rename or re-permission it freely from the UserSpice menu builder like any other item.
+- Once the item exists, the unread counter appears as a small red bubble next to it — refreshed every 5 seconds by the plugin's footer poll (works on any theme, no theme-specific markup needed).
+- Removing is one click (Add unchanged only once per menu — safe to re-run).
+- **UltraMenu only:** requires the standard UserSpice menu system (`us_menus` / `us_menu_items`). Themes that do not read UltraMenu will not show the item.
+
 ### AJAX API
 All responses share one JSON shape: `{"status": "success|error", "message": ...}`
 
@@ -172,7 +80,7 @@ All responses share one JSON shape: `{"status": "success|error", "message": ...}
 | `ajax/messages.php` | One conversation's messages + mark-as-read (returns `can_send` so the UI can hide the reply box) |
 
 ### Language files
-- The plugin detects the site language from `$_SESSION['us_lang']`, loads its own language bag, and also writes the keys into `usersc/lang/<code>.php` during install.
+- The plugin detects the site language from `$_SESSION['us_lang']`, loads its own language keys, and also writes the keys into `usersc/lang/<code>.php` during install.
 - Missing keys fall back to the built-in `eh_chat_lang_fallback()` map (dates, weekdays, notices).
 
 ### Folder structure
@@ -198,6 +106,4 @@ usersc/lang/en-US.php
 usersc/lang/ar-EG.php
 ```
 
----
-
-**License:** MIT — free to use and modify; keep the author credit.
+**License:** MIT - free to use and modify; keep the author credit.

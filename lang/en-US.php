@@ -74,5 +74,15 @@ $lang = array_merge($lang,array(
     'EH_CHAT_ONLINE_LABEL'    => 'Consider user online for (minutes)',
     'EH_CHAT_ONLINE_HINT'     => 'After this many minutes without activity, the user shows as offline.',
     'EH_CHAT_SAVE'            => 'Save Settings',
+    'EH_CHAT_MENU_TITLE'      => 'Chat menu item (for other themes)',
+    'EH_CHAT_MENU_HINT'       => 'If your theme has no chat dropdown in the navbar, the plugin can add a "Messages" item as the last entry of any menu — rendered in the theme\'s own style. Afterwards you can drag, edit or set its permissions like any other item from the UserSpice menu builder.',
+    'EH_CHAT_MENU_SELECT'     => 'Choose menu',
+    'EH_CHAT_MENU_ICON'       => 'Icon class (e.g.: fas fa-comments)',
+    'EH_CHAT_MENU_ADD'        => 'Add as last menu item',
+    'EH_CHAT_MENU_ADDED'      => 'Chat menu item added as the last menu entry — drag it anywhere from the menu builder.',
+    'EH_CHAT_MENU_REMOVE'     => 'Remove',
+    'EH_CHAT_MENU_REMOVED'    => 'Chat menu item removed from the menu.',
+    'EH_CHAT_MENU_NONE'       => 'The item is not in any menu right now.',
+    'EH_CHAT_MENU_ALREADY'    => 'The item already exists in this menu.',
 
 ));

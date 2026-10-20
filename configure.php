@@ -20,6 +20,42 @@ if (!empty($_POST)) {
     $token = $_POST['csrf'] ?? '';
     if (!Token::check($token)) {
         include($abs_us_root . $us_url_root . 'usersc/scripts/token_error.php');
+    } elseif (($_POST['eh_menu_action'] ?? '') === 'add') {
+        /* تكامل المنيو — إضافة بند المحادثات آخر المنيو المختار
+           (نفس نمط منيو UserSpice: MAX(display_order)+1 و parent = 0) */
+        $menuId = (int)($_POST['eh_menu_id'] ?? 0);
+        $chatLink = 'usersc/eh_messages.php';
+        if ($menuId > 0 && $db->query("SELECT id FROM us_menus WHERE id = ?", [$menuId])->count()) {
+            if ($db->query("SELECT id FROM us_menu_items WHERE menu = ? AND link = ?", [$menuId, $chatLink])->count()) {
+                $msg = eh_lang('EH_CHAT_MENU_ALREADY');
+            } else {
+                $mx = $db->query("SELECT MAX(display_order) AS mx FROM us_menu_items WHERE menu = ? AND parent = 0", [$menuId])->first();
+                $permIds = array_map(function ($p) { return (string)$p->id; }, $db->query("SELECT id FROM permissions")->results());
+                $iconClass = trim((string)($_POST['eh_menu_icon'] ?? ''));
+                $db->insert('us_menu_items', [
+                    'menu'          => $menuId,
+                    'type'          => 'link',
+                    'label'         => eh_lang('EH_CHAT_MESSAGES'),
+                    'link'          => $chatLink,
+                    'icon_class'    => $iconClass !== '' ? $iconClass : 'fas fa-comments',
+                    'li_class'      => '',
+                    'a_class'       => '',
+                    'link_target'   => '_self',
+                    'parent'        => 0,
+                    'display_order' => (int)($mx->mx ?? 0) + 1,
+                    'disabled'      => 0,
+                    'permissions'   => json_encode($permIds),
+                ]);
+                $msg = eh_lang('EH_CHAT_MENU_ADDED');
+            }
+        }
+    } elseif (($_POST['eh_menu_action'] ?? '') === 'remove') {
+        /* تكامل المنيو — إزالة بند المحادثات من المنيو المختار */
+        $menuId = (int)($_POST['eh_menu_id'] ?? 0);
+        if ($menuId > 0) {
+            $db->query("DELETE FROM us_menu_items WHERE menu = ? AND link = 'usersc/eh_messages.php'", [$menuId]);
+            $msg = eh_lang('EH_CHAT_MENU_REMOVED');
+        }
     } else {
         /* 1) مصفوفة البرمشن × البرمشن */
         $matrix = [];
@@ -63,6 +99,7 @@ if (!empty($_POST)) {
 
 $perms = $db->query("SELECT id, name, descrip FROM permissions WHERE id NOT IN (1) ORDER BY id ASC")->results();
 $allUsers = $db->query("SELECT id, username, fname, lname FROM users WHERE active = 1 ORDER BY COALESCE(NULLIF(fname, ''), username) ASC")->results();
+$menus = $db->query("SELECT id, menu_name FROM us_menus ORDER BY id ASC")->results();
 
 $settings = eh_chat_settings_row();
 $matrix = $settings->perm_matrix;
@@ -175,6 +212,62 @@ $csrf = Token::generate();
 
         <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> <?= eh_lang('EH_CHAT_SAVE') ?></button>
     </form>
+
+    <!-- تكامل المنيو: بند المحادثات آخر المنيو للثيمات التانية — فورم مستقل
+         عشان ضغط الإضافة/الإزالة مايبعتش الماتريكس فاضية بالغلط -->
+    <div class="card card-outline card-info mb-3">
+        <div class="card-header"><h3 class="card-title"><?= eh_lang('EH_CHAT_MENU_TITLE') ?></h3></div>
+        <div class="card-body">
+            <p class="text-muted"><?= eh_lang('EH_CHAT_MENU_HINT') ?></p>
+            <?php
+            $chatItems = $db->query(
+                "SELECT mi.id, mi.menu, mi.display_order, m.menu_name
+                 FROM us_menu_items mi
+                 JOIN us_menus m ON m.id = mi.menu
+                 WHERE mi.link = 'usersc/eh_messages.php'
+                 ORDER BY mi.menu ASC"
+            )->results();
+            ?>
+            <?php if ($chatItems) { ?>
+                <div class="mb-2">
+                    <?php foreach ($chatItems as $ci) { ?>
+                    <span class="d-inline-flex align-items-center gap-2 me-3 mb-1">
+                        <span class="badge bg-info"><?= htmlspecialchars((string)$ci->menu_name) ?> (#<?= (int)$ci->menu ?>)</span>
+                        <span class="text-muted"><?= (int)$ci->display_order ?></span>
+                        <form method="post" class="d-inline">
+                            <input type="hidden" name="csrf" value="<?= $csrf ?>">
+                            <input type="hidden" name="eh_menu_action" value="remove">
+                            <input type="hidden" name="eh_menu_id" value="<?= (int)$ci->menu ?>">
+                            <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i> <?= eh_lang('EH_CHAT_MENU_REMOVE') ?></button>
+                        </form>
+                    </span>
+                    <?php } ?>
+                </div>
+            <?php } else { ?>
+                <p class="text-muted"><?= eh_lang('EH_CHAT_MENU_NONE') ?></p>
+            <?php } ?>
+
+            <form method="post" class="row g-2 align-items-end">
+                <input type="hidden" name="csrf" value="<?= $csrf ?>">
+                <input type="hidden" name="eh_menu_action" value="add">
+                <div class="col-12 col-md-4">
+                    <label class="form-label" for="ehMenuId"><?= eh_lang('EH_CHAT_MENU_SELECT') ?></label>
+                    <select class="form-select" id="ehMenuId" name="eh_menu_id">
+                        <?php foreach ($menus as $m) { ?>
+                            <option value="<?= (int)$m->id ?>"><?= htmlspecialchars((string)$m->menu_name) ?> — #<?= (int)$m->id ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+                <div class="col-12 col-md-4">
+                    <label class="form-label" for="ehMenuIcon"><?= eh_lang('EH_CHAT_MENU_ICON') ?></label>
+                    <input class="form-control" id="ehMenuIcon" name="eh_menu_icon" value="fas fa-comments">
+                </div>
+                <div class="col-12 col-md-4">
+                    <button type="submit" class="btn btn-info w-100"><i class="fas fa-bars"></i> <?= eh_lang('EH_CHAT_MENU_ADD') ?></button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <!-- نسخة select2 المستقلة الخاصة بالبلجن -->

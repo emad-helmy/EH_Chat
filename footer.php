@@ -67,7 +67,7 @@ foreach (['EH_CHAT_TODAY', 'EH_CHAT_YESTERDAY',
 <script nonce="<?= $nonce ?>" src="<?= $root ?>usersc/plugins/eh_chat/assets/js/eh_chat.js"></script>
 
 <!-- الزر العائم + اللوحة -->
-<div class="eh-widget" id="ehWidget" dir="rtl">
+<div class="eh-widget" id="ehWidget" dir="<?= $ehDir ?? 'ltr' ?>">
     <div class="eh-panel" id="ehPanel" hidden>
         <div class="eh-panel-head">
             <span class="eh-panel-title"><i class="fas fa-comments"></i> <?= htmlspecialchars(eh_lang('EH_CHAT_MESSAGES')) ?></span>

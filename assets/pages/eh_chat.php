@@ -26,7 +26,7 @@ if ($startWith > 0) {
 <div class="row">
   <div class="col-md-12">&nbsp;</div>
 </div>
-<div class="row eh-chat-page">
+<div class="row eh-chat-page" dir="<?= function_exists('eh_chat_dir') ? eh_chat_dir() : 'ltr' ?>">
     <!-- قائمة الجهات -->
     <div class="col-12 col-md-4">
         <div class="card card-outline card-info mb-3 mb-md-0">

@@ -33,10 +33,12 @@ foreach (['EH_CHAT_TODAY', 'EH_CHAT_YESTERDAY',
     }
 }
 ?>
+<?php if (function_exists('eh_chat_dir')) { $ehDir = eh_chat_dir(); } else { $ehDir = 'ltr'; } ?>
 <link rel="stylesheet" href="<?= $root ?>usersc/plugins/eh_chat/assets/css/eh_chat.css">
 <script nonce="<?= $nonce ?>">
     window.EH_CHAT = {
         csrf: '<?= Token::generate() ?>',
+        dir: '<?= $ehDir ?>',
         assets: '<?= $root ?>usersc/plugins/eh_chat/assets',
         lang: <?= json_encode($ehStrings, JSON_UNESCAPED_UNICODE) ?>,
         urls: {

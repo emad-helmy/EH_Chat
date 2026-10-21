@@ -234,8 +234,6 @@
   border: 1px solid #e5e5e5;
   overflow: hidden;
   box-shadow: 0 8px 30px rgba(0, 0, 0, .25);
-  direction: rtl;
-  text-align: right;
 }
 .eh-nav-head {
   display: flex;
@@ -374,7 +372,7 @@
 }
 
 /* شكل الرد السريع */
-.eh-qr-ctx { background: #f0f2f5; border-radius: 10px; padding: 10px 12px; margin-bottom: 14px; direction: rtl; }
+.eh-qr-ctx { background: #f0f2f5; border-radius: 10px; padding: 10px 12px; margin-bottom: 14px; }
 .eh-qr-ctx-label { font-size: 11px; color: #667; margin-bottom: 4px; }
 .eh-qr-ctx-msg {
   background: #fff; color: #111; border: 1px solid #e5e5e5; border-radius: 10px;
@@ -395,7 +393,18 @@
 .eh-contact-msg { font-size: 12px; color: #667; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* صفحة المحادثة */
-.eh-chat-page { direction: rtl; }
+/* الاتجاه — البلجن بيه عقبه لغة الموقع: RTL-websites باي dir="rtl"
+   بيتحط من السيرفر (الصفحات) أو الجاسكربت (النافبار والرد السريع) */
+[dir="rtl"] .eh-chat-page,
+[dir="rtl"] .eh-msg-page,
+[dir="rtl"] .eh-nav-drop,
+[dir="rtl"] .eh-panel,
+[dir="rtl"] .eh-qr-ctx,
+.eh-chat-page[dir="rtl"], .eh-msg-page[dir="rtl"],
+.eh-nav-drop[dir="rtl"], .eh-panel[dir="rtl"], .eh-qr-ctx[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
+}
 .eh-messages { height: 62vh; overflow-y: auto; background: #ece5dd; border-radius: .5rem; padding: 1rem; }
 
 /* دروب الثيم (بيانات eh_chat) — في الشاشات الصغيرة يفتح جوه الشاشة

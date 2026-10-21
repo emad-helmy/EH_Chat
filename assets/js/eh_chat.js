@@ -9,8 +9,21 @@
 
   var CFG = window.EH_CHAT || {
     csrf: '',
+    dir: 'ltr',
     urls: { nav: '', send: '', messages: '', chat: '', inbox: '' }
   };
+
+  /* الاتجاه — بيتحسب من لغة الموقع (server) ويتطبق على حاويات البلجن */
+  function ehDirAll() {
+    var d = (CFG.dir === 'rtl') ? 'rtl' : 'ltr';
+    ['eh-chat-page', 'eh-msg-page', 'eh-nav-drop', 'eh-panel', 'eh-qr-ctx']
+      .forEach(function (cls) {
+        document.querySelectorAll('.' + cls).forEach(function (el) {
+          el.setAttribute('dir', d);
+        });
+      });
+  }
+  ehDirAll();
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -104,7 +117,7 @@
   function quickReply(userId, name, lastMsg) {
     var ctx = '';
     if (lastMsg) {
-      ctx = '<div class="eh-qr-ctx">' +
+      ctx = '<div class="eh-qr-ctx" dir="' + (CFG.dir === 'rtl' ? 'rtl' : 'ltr') + '">' +
               '<div class="eh-qr-ctx-label">' + esc(T('EH_CHAT_LAST_MESSAGE')) + ' ' + esc(name) + ':</div>' +
               '<div class="eh-qr-ctx-msg">' + esc(lastMsg) + '</div>' +
             '</div>';

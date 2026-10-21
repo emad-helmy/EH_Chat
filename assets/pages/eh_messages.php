@@ -67,7 +67,7 @@ if ($canBc && !$isAdm) {
 <div class="row">
   <div class="col-md-12">&nbsp;</div>
 </div>
-<div class="row eh-msg-page">
+<div class="row eh-msg-page" dir="<?= function_exists('eh_chat_dir') ? eh_chat_dir() : 'ltr' ?>">
     <div class="col-12 col-md-5">
         <div class="card card-outline card-primary">
             <div class="card-header"><h3 class="card-title"><?= eh_lang('EH_CHAT_NEW') ?></h3></div>

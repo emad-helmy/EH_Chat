@@ -94,6 +94,7 @@ All responses share one JSON shape: `{"status": "success|error", "message": ...}
 ### Language files
 - The plugin detects the site language from `$_SESSION['us_lang']`, loads its own language keys, and also writes the keys into `usersc/lang/<code>.php` during install.
 - Missing keys fall back to the built-in `eh_chat_lang_fallback()` map (dates, weekdays, notices).
+- **Direction follows the site language:** RTL languages (`ar-*`, `fa-*`, `he-*`, `ur-*`, …) get mirrored panels/pages (`dir="rtl"`), everything else renders LTR — no hardcoded direction anywhere.
 
 ### Folder structure
 ```

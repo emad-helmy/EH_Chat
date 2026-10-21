@@ -113,6 +113,16 @@ if (!function_exists('eh_lang')) {
         return $fallback !== '' ? $fallback : $key;
     }
 
+    /** اتجاه الواجهة حسب لغة الموقع — RTL لغة (عربي\فارسي...) وباقي اللغات LTR */
+    function eh_chat_dir()
+    {
+        $lg = strtolower((string)($_SESSION['us_lang'] ?? 'en-US'));
+        /* ناخد البريفكس بس — ar-EG / ar_SA كلهم عربي */
+        $base = strtok($lg, '-_');
+        return in_array($base, ['ar', 'he', 'fa', 'ur', 'sd', 'ps', 'dv', 'yi', 'ckb', 'ug'], true)
+            ? 'rtl' : 'ltr';
+    }
+
     /** كل مفاتيح البلجن — للتمرير للجافاسكربت */
     function eh_chat_lang_bag()
     {

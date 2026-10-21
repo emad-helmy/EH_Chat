@@ -34,7 +34,7 @@ if ($canBc && !$isAdm) {
 }
 ?>
 <style>
-  .eh-msg-page { direction: rtl; }
+  /* الاتجاه مبقاش هاردكورد — الـwrapper بياخد dir من eh_chat_dir() حسب لغة الموقع */
   .eh-thread { display: flex; gap: 10px; padding: 10px 12px; border-bottom: 1px solid #eee; text-decoration: none; color: inherit; }
   .eh-thread:hover { background: #f6f6f6; }
   .eh-thread-img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; }

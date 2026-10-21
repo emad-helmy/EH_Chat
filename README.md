@@ -33,7 +33,7 @@ It is fully independent from the rest of the site (no external plugin) and insta
 2. From the UserSpice admin Dashboard: **Plugin Manager → Install** — the installer automatically:
    - creates the plugin's database tables,
    - registers `usersc/eh_chat.php` + `usersc/eh_messages.php` as pages,
-   - writes the language keys into `usersc/lang` (Arabic + English). Safe merge: your existing keys and comments in those files are preserved — only the plugin's marked `EH-CHAT LANG` block is added or updated.
+   - adds the language keys into `usersc/lang` (Arabic + English) using a safe merge: the plugin **never deletes or overwrites any keys, comments, or custom content** that already exist in those files — only its own marked `EH-CHAT LANG` block is added or updated.
 
    On delete/uninstall the plugin removes only its own marked block (your keys stay), and UserSpice then removes the plugin folder completely.
    - registers the plugin inside the UserSpice plugin system.

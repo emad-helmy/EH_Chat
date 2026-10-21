@@ -25,6 +25,16 @@ It is fully independent from the rest of the site (no external plugin) and insta
 - **Select2** is bundled too (searchable + multi-select) across every dropdown — send one message to several users at once, and big user lists are easily filtered by name or username.
 - **Menu item for other themes:** add a "Messages" item as the last entry of any menu straight from the Configure page — rendered in the theme's own style with a live unread-count bubble. **UltraMenu required.**
 
+### Screenshots
+
+| Dark | Light |
+|---|---|
+| ![Navbar unread badge — dark](docs/screenshots/navbar-dark.png) | ![Navbar unread badge — light](docs/screenshots/navbar-light.png) |
+| ![Floating button + panel — dark](docs/screenshots/fab-panel-dark.png) | ![Floating button + panel — light](docs/screenshots/fab-panel-light.png) |
+| ![Messages page — dark](docs/screenshots/messages-dark.png) | ![Messages page — light](docs/screenshots/messages-light.png) |
+| ![Chat page — dark](docs/screenshots/chat-dark.png) | ![Chat page — light](docs/screenshots/chat-light.png) |
+| ![Configure page — dark](docs/screenshots/configure-dark.png) | ![Configure page — light](docs/screenshots/configure-light.png) |
+
 ### Installation
 1. Upload the whole `eh_chat` folder into:
    ```

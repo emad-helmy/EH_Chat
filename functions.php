@@ -128,6 +128,115 @@ if (!function_exists('eh_lang')) {
     }
 }
 
+/* ---------------------------------------------------------------
+ * مفاتيح اللغة في usersc/lang — دمج آمن:
+ * مفاتيح المستخدم مابتتحذفش أبدًا — إحنا بنضيف/نشيل كتلتنا بس
+ * (محدّدة بعلامات BEGIN/END واضحة) وقواعد الملف الباقية زي ما هي.
+ * ------------------------------------------------------------- */
+if (!function_exists('eh_chat_lang_dst_dir')) {
+    function eh_chat_lang_dst_dir()
+    {
+        global $abs_us_root, $us_url_root;
+        // الباث ممكن يكون مقدر من المستخدم — نقابلها بنسبة لجذر الموقع
+        $d = rtrim($abs_us_root . $us_url_root, '/\\') . '/usersc/lang/';
+        if (!is_dir($d)) { @mkdir($d, 0755, true); }
+        return $d;
+    }
+}
+
+if (!function_exists('eh_chat_lang_marks')) {
+    /** علامات كتلة مفاتيح البلجلن */
+    function eh_chat_lang_marks()
+    {
+        return ["/* ==== EH-CHAT LANG BEGIN ==== */", "/* ==== EH-CHAT LANG END ==== */"];
+    }
+}
+
+if (!function_exists('eh_chat_lang_install_keys')) {
+    /** إضافة/تحديث كتلة مفاتيح البلجن — من غير أي لمس لباقي الملف */
+    function eh_chat_lang_install_keys()
+    {
+        $names = ['en-US.php' => 'English', 'ar-EG.php' => 'Arabic'];
+        $dir   = eh_chat_lang_dst_dir();
+        list($MB, $ME) = eh_chat_lang_marks();
+        $re    = '~' . preg_quote($MB, '~') . '(.*?)' . preg_quote($ME, '~') . '~s';
+
+        foreach ($names as $lg => $lgName) {
+            $src = __DIR__ . '/lang/' . $lg;
+            if (!is_file($src)) { continue; }
+            $srcTxt = (string) file_get_contents($src);
+            if (!preg_match('/array_merge\s*\(\s*\$lang\s*,\s*array\s*\((.*?)\)\s*\)\s*;/s', $srcTxt, $m)) { continue; }
+            $keys  = trim($m[1]);
+            $block = $MB . "\n\$lang = array_merge(\$lang,array(\n\n" . $keys . "\n\n));\n" . $ME . "\n";
+
+            $dst = $dir . $lg;
+            if (!is_file($dst)) {
+                @file_put_contents($dst, "<?php\n// EH WhatsApp Like — {$lgName} strings (plugin)\n\n" . $block);
+                continue;
+            }
+
+            $cur = (string) file_get_contents($dst);
+            if (preg_match($re, $cur)) {
+                // كتلتنا موجودة قبل كده → نحديثها (بنشيل مفاتيح البلجن القديمة بس)
+                $cur = preg_replace($re, $block, $cur, 1);
+            } else {
+                // مفيش كتلة → نضيفها في الآخر (من غير قوس إغلاق كان بيكسر الملف)
+                $cur = preg_replace('/\?>\s*$/', '', $cur);
+                $cur = rtrim($cur, " \t\r\n") . "\n\n" . $block;
+            }
+            @file_put_contents($dst, $cur);
+        }
+    }
+}
+
+if (!function_exists('eh_chat_lang_uninstall_keys')) {
+    /** شيل مفاتيح البلجن فقط — مفاتيح المستخدم بترسى */
+    function eh_chat_lang_uninstall_keys()
+    {
+        $names = ['en-US.php', 'ar-EG.php'];
+        $dir   = eh_chat_lang_dst_dir();
+        list($MB, $ME) = eh_chat_lang_marks();
+        $re    = '~' . preg_quote($MB, '~') . '(.*?)' . preg_quote($ME, '~') . '~s';
+
+        foreach ($names as $lg) {
+            $dst = $dir . $lg;
+            if (!is_file($dst)) { continue; }
+            $cur = (string) file_get_contents($dst);
+            $orig = $cur;
+
+            if (preg_match($re, $cur)) {
+                // الكتلة المعلّمة → نشيلها كاملة
+                $cur = preg_replace($re, '', $cur, 1);
+                $cur = preg_replace('/[ \t]*\n[ \t]*\n[ \t]*\n/s', "\n\n", $cur); // تنظيف سطور فاضية
+                // لو الملف كله بتاعنا (تاج الفتح + كومنتات بس) → ننشله
+                $codeOnly = trim(preg_replace(array('/^<\?php/', '/^\s*\/\/[^\n]*/m'), '', $cur));
+                if ($codeOnly === '') { @unlink($dst); continue; }
+                $cur = rtrim($cur, " \t\r\n") . "\n";
+            } elseif (preg_match('/EH_CHAT/', $cur)) {
+                // شكل قديم من غير علامات — نشيل سطور المفاتيح بس
+                $cur = preg_replace_callback(
+                    '/\$lang\s*=\s*array_merge\s*\(\s*\$lang\s*,\s*array\s*\((.*?)\)\s*\)\s*;/s',
+                    function ($mm) {
+                        $inner = $mm[1];
+                        if (strpos($inner, 'EH_CHAT') === false) { return $mm[0]; }
+                        $lines = preg_split('/\r?\n/', $inner);
+                        $lines = array_values(array_filter($lines, function ($l) {
+                            return trim($l) === '' || strpos($l, 'EH_CHAT') === false;
+                        }));
+                        if (trim(implode('', $lines)) === '') { return ''; } // الكتلة كلها لينا
+                        return "\$lang = array_merge(\$lang,array(\n" . implode("\n", $lines) . "\n));";
+                    },
+                    $cur
+                );
+                // مفاتيح مكتوبة $lang['EH_CHAT_X'] = '...' → نشيلها
+                $cur = preg_replace("/^[ \t]*\\\$lang\s*\[\s*['\"]EH_CHAT[^'\"]*['\"]\s*\]\s*=>?[^\n]*\n?/m", '', $cur);
+            }
+
+            if ($cur !== $orig) { @file_put_contents($dst, $cur); }
+        }
+    }
+}
+
 if (!function_exists('eh_chat_settings_row')) {
     function eh_chat_settings_row()
     {

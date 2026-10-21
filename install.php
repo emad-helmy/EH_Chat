@@ -79,43 +79,10 @@ $db->query("
     WHERE NOT EXISTS (SELECT 1 FROM `eh_chat_settings` WHERE `id` = 1)
 ", [json_encode($matrix), json_encode([2])]);
 
-/* ملفات اللغة في usersc/lang — UserSpice بيقراها تلقائيًا بعد users/lang
-   بنكتب المفاتيح بين $lang = array_merge($lang,array( ... )); جوه الملف الموجود
-   (وبنمسح الكومنت لو الملف لسه بالشكل المعلّق)، ولو الملف مش موجود بننشئه. */
-foreach ([
-    'en-US' => 'English',
-    'ar-EG' => 'Arabic',
-] as $lg => $lgName) {
-    $src = __DIR__ . '/lang/' . $lg . '.php';
-    if (!file_exists($src)) { continue; }
-    $dst = $abs_us_root . $us_url_root . 'usersc/lang/' . $lg . '.php';
-
-    /* مفاتيح البلجن من ملف المصدر */
-    $srcTxt = (string) file_get_contents($src);
-    if (!preg_match('/array_merge\s*\(\s*\$lang\s*,\s*array\s*\((.*)\)\s*\)\s*;/s', $srcTxt, $m)) { continue; }
-    $ourKeys = trim($m[1]);
-
-    $block = "\$lang = array_merge(\$lang,array(\n\n" . $ourKeys . "\n\n));\n";
-
-    if (!file_exists($dst)) {
-        @file_put_contents($dst, "<?php\n// EH WhatsApp Like — {$lgName} strings\n" . $block);
-        continue;
-    }
-
-    $cur = (string) file_get_contents($dst);
-    /* الملف فيه كتلة array_merge (حقيقية أو معلّقة)? */
-    if (preg_match('/\/\/\s*\$lang\s*=\s*array_merge\s*\(\s*\$lang\s*,\s*array\s*\(.*?\/\/\s*\)\s*\)\s*;/s', $cur)) {
-        /* الشكل المعلّق → نشيله ونحط مفاتيحنا */
-        $cur = preg_replace('/\/\/\s*\$lang\s*=\s*array_merge\s*\(\s*\$lang\s*,\s*array\s*\(.*?\/\/\s*\)\s*\)\s*;/s', $block, $cur, 1);
-    } elseif (preg_match('/\$lang\s*=\s*array_merge\s*\(\s*\$lang\s*,\s*array\s*\(.*?\)\s*\)\s*;/s', $cur)) {
-        /* كتلة موجودة → نستبدلها (بتشيل تعديلات البلجن القديمة ويفضل الشكل نظيف) */
-        $cur = preg_replace('/\$lang\s*=\s*array_merge\s*\(\s*\$lang\s*,\s*array\s*\(.*?\)\s*\)\s*;/s', $block, $cur, 1);
-    } else {
-        /* مفيش كتلة → نضيفها في الآخر */
-        $cur = rtrim($cur, " \t\n\r?>\n") . "\n\n" . $block;
-    }
-    @file_put_contents($dst, $cur);
-}
+/* ملفات اللغة في usersc/lang — UserSpice بيقراها تلقائيًا بعد users/lang.
+   دمج آمن: ملف المستخدم بيفضل زي ما هو — إحنا بنضيف/نحدّث كتلة مفاتيحنا
+   بس (بعلامات BEGIN/END) من غير ما نلمس أي array_merge أو مفاتيح موجودة. */
+eh_chat_lang_install_keys();
 
 /* زامنة الـini عشان الفوتر يشتغل فورًا (زي مدير البلجنز بالظبط) */
 eh_chat_sync_ini();
